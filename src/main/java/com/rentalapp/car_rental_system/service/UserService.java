@@ -89,7 +89,7 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (user.getRole() == Role.ADMIN) {
-            user.setRole(Role.USER); // Revoke admin rights
+            user.setRole(Role.USER);
             userRepository.save(user);
         }
     }

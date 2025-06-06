@@ -27,10 +27,10 @@ public class AdminController {
     public String showAdminUserPage(Model model) {
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
-        return "admin-users"; // matches templates/admin-users.html
+        return "admin-users";
     }
 
-    // Create a new admin user
+
     @PostMapping("/create")
     public String createAdmin(@RequestParam String firstName,
                               @RequestParam String lastName,
@@ -45,31 +45,30 @@ public class AdminController {
     @PostMapping("/promote")
     public String promoteToAdmin(@RequestParam String username) {
         userService.promoteUserToAdmin(username);
-        return "redirect:/admin/admin-users"; // Redirect to the user management page
+        return "redirect:/admin/admin-users";
     }
 
     @PostMapping("/revoke")
     public String revokeAdminRights(@RequestParam String username) {
         userService.revokeAdminRights(username);
-        return "redirect:/admin/admin-users"; // Redirect to the user management page
+        return "redirect:/admin/admin-users";
     }
 
     @PostMapping("/delete")
     public String deleteUser(@RequestParam String username) {
         userService.deleteUser(username);
-        return "redirect:/admin/admin-users"; // Redirect to the user management page
+        return "redirect:/admin/admin-users";
     }
 
 
 
-    // Show the add car form
     @GetMapping("/add-car")
     public String showAddCarForm(Model model) {
         model.addAttribute("car", new Car());
-        return "add-car"; // matches templates/add-car.html
+        return "add-car";
     }
 
-    // Handle adding a new car
+
     @PostMapping("/add-car")
     public String addCar(@ModelAttribute Car car) {
         carService.addCar(car);

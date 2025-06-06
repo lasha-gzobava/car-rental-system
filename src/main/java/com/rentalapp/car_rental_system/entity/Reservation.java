@@ -4,7 +4,6 @@ import com.rentalapp.car_rental_system.enums.Extra;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
 

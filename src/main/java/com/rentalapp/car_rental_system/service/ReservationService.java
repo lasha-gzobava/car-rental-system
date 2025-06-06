@@ -9,8 +9,6 @@ import com.rentalapp.car_rental_system.repository.ReservationRepository;
 import com.rentalapp.car_rental_system.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -37,7 +35,6 @@ public class ReservationService {
             throw new IllegalArgumentException("End time must be after start time.");
         }
 
-        // Check for conflicting reservations
         List<Reservation> existingReservations = reservationRepository.findByCarId(carId);
         for (Reservation r : existingReservations) {
             if (!(endTime.isBefore(r.getStartTime()) || startTime.isAfter(r.getEndTime()))) {

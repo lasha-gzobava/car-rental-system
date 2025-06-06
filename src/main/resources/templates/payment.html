@@ -17,7 +17,7 @@
     </p>
 
     <form th:action="@{/payment}" method="post">
-        <!-- ✅ CSRF token is required for POST -->
+
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
         <input type="hidden" name="carId" th:value="${car.id}" />

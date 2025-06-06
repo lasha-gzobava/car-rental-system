@@ -21,12 +21,12 @@
         </span>
     </p>
 
-    <!-- 🚫 Error Box -->
+
     <div th:if="${error}" class="error-box" style="color: red; font-weight: bold; margin-bottom: 10px;">
         <p th:text="${error}"></p>
     </div>
 
-    <!-- 🕒 Reserved Time Slots -->
+
     <div>
         <h3>Reserved Time Slots:</h3>
         <ul>
@@ -36,7 +36,7 @@
         </ul>
     </div>
 
-    <!-- 📅 Rent Form -->
+
     <form th:action="@{'/payment/' + ${car.id}}" method="get">
         <input type="hidden" name="username" th:value="${#authentication.name}" />
         <input type="hidden" name="carId" th:value="${car.id}" />

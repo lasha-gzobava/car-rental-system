@@ -60,7 +60,7 @@ public class CarController {
     @GetMapping
     public String showAllCars(Model model) {
         model.addAttribute("cars", carService.getAllCars());
-        return "cars"; // matches templates/cars.html
+        return "cars";
     }
 
     @GetMapping("/details/{slug}")

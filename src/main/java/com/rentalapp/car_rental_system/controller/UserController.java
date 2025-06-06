@@ -3,10 +3,7 @@ package com.rentalapp.car_rental_system.controller;
 import com.rentalapp.car_rental_system.entity.User;
 import com.rentalapp.car_rental_system.enums.Role;
 import com.rentalapp.car_rental_system.service.UserService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 

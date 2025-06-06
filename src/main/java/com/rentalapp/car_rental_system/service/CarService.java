@@ -31,8 +31,6 @@ public class CarService {
 
 
 
-
-
     public Car getCarById(Long id) {
         return carRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Car not found"));
@@ -43,7 +41,7 @@ public class CarService {
     public Car addCar(Car car) {
 
         String slug = (car.getBrand() + "-" + car.getModel()).toLowerCase().replaceAll("[^a-z0-9]", "-");
-        car.setSlug(slug); // Set the slug
+        car.setSlug(slug);
 
         return carRepository.save(car);
     }
@@ -61,7 +59,7 @@ public class CarService {
         String slug = (car.getBrand() + "-" + car.getModel()).toLowerCase().replaceAll("[^a-z0-9]", "-");
         car.setSlug(slug);
 
-        return carRepository.save(car); // Save the updated car in the database
+        return carRepository.save(car);
     }
 
     public void deleteCar(Long id) {
@@ -87,14 +85,14 @@ public class CarService {
     public boolean isCarAvailable(Long carId, LocalTime startTime, LocalTime endTime) {
         List<Reservation> reservations = reservationRepository.findByCarId(carId);
 
-        // Check for overlapping reservations
+
         for (Reservation reservation : reservations) {
             if (!(endTime.isBefore(reservation.getStartTime()) || startTime.isAfter(reservation.getEndTime()))) {
-                return false; // There is a conflict in the timing
+                return false;
             }
         }
 
-        return true; // No conflicts found
+        return true;
     }
 
     public Reservation createReservation(String username, Long carId, Set<Extra> extras,

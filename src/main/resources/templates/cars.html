@@ -10,7 +10,7 @@
 
 <div class="form-card">
 
-    <!-- Top header with logout -->
+
     <div style="display: flex; justify-content: space-between; align-items: center;">
         <h2>Available Cars</h2>
         <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
@@ -21,7 +21,7 @@
         </form>
     </div>
 
-    <!-- Admin-only controls -->
+
     <div sec:authorize="hasRole('ADMIN')">
         <a th:href="@{/admin/add-car}" class="btn-admin">
             <i class="fas fa-plus"></i> Add Car
@@ -31,7 +31,7 @@
         </a>
     </div>
 
-    <!-- Car list (visible to all authenticated users) -->
+
     <div class="car-list">
         <div class="car-card" th:each="car : ${cars}">
             <h3 th:text="${car.brand + ' ' + car.model}">Car Name</h3>
