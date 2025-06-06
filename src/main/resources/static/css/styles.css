@@ -1,0 +1,229 @@
+/* General Reset & Layout */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f2f3f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Card container */
+.card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 350px;
+}
+
+/* Heading */
+.card h1 {
+    margin-bottom: 30px;
+    color: #444;
+}
+
+/* Buttons */
+.card a {
+    display: block;
+    margin: 10px 0;
+    background-color: #8e44ad; /* purple */
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.card a:hover {
+    background-color: #6d3091;
+}
+
+/* Form card styling */
+.form-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    margin: auto;
+    margin-top: 50px;
+    text-align: center;
+}
+
+/* Heading */
+.form-card h2 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* Input group with icons */
+.input-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 15px 0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+
+.input-group i {
+    color: #8e44ad;
+    margin-right: 10px;
+}
+
+.input-group input,
+.input-group select {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 16px;
+    background: transparent;
+}
+
+/* Submit button */
+form button {
+    margin-top: 20px;
+    background-color: #8e44ad;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+}
+
+form button:hover {
+    background-color: #732d91;
+}
+
+
+/* Eye button inside input group */
+
+.password-group {
+    position: relative;
+}
+
+.password-group .eye-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #8e44ad;
+}
+
+.password-group input {
+    padding-right: 35px; /* give space for eye icon */
+}
+
+
+/* Fix layout: eye button doesn't break input width */
+.input-group input[type="password"] {
+    flex: 1;
+}
+
+.car-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.car-card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    width: 280px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: left;
+}
+
+.car-card h3 {
+    color: #8e44ad;
+}
+
+.car-card form {
+    margin-top: 10px;
+}
+
+.car-card input {
+    width: 60px;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.btn-admin {
+    margin-right: 10px;
+    display: inline-block;
+    padding: 10px;
+    background-color: #8e44ad;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.btn-admin:hover {
+    background-color: #732d91;
+}
+
+/* Input group for Description */
+.input-group textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    height: 80px;
+    font-size: 14px;
+    background: #f9f9f9;
+    resize: none;
+}
+
+/* Label for description */
+.input-group label {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Align the extras section nicely */
+.extras-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.group-label {
+    min-width: 100px;
+    font-weight: bold;
+    padding-top: 4px;
+}
+
+.extras-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Optional: Stylish checkboxes */
+.extras-options input[type="checkbox"] {
+    accent-color: #8e44ad;
+    transform: scale(1.2);
+    margin-right: 6px;
+}
+
+
+
+
+

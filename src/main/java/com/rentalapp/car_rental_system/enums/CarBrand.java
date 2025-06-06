@@ -1,0 +1,32 @@
+package com.rentalapp.car_rental_system.enums;
+
+public enum CarBrand {
+    TOYOTA,
+    BMW,
+    AUDI,
+    HONDA,
+    MERCEDES,
+    FORD,
+    KIA,
+    HYUNDAI,
+    NISSAN,
+    TESLA,
+    VOLKSWAGEN,
+    CHEVROLET,
+    VOLVO,
+    LEXUS,
+    JEEP,
+    MAZDA,
+    PEUGEOT,
+    RENAULT,
+    SUZUKI,
+    SKODA,
+    SUBARU,
+    FIAT,
+    MITSUBISHI,
+    DODGE,
+    PORSCHE,
+    LAND_ROVER,
+    INFINITI,
+    CADILLAC
+}

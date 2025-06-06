@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Manage Users</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div class="form-card">
+    <h2>Admin User Management</h2>
+
+    <div sec:authorize="hasRole('ADMIN')">
+        <h3>Manage Users</h3>
+        <div class="user-list">
+            <div th:each="user : ${users}">
+                <div class="user-card">
+                    <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+                    <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
+
+                    <!-- Conditionally show Promote or Revoke -->
+                    <form th:action="@{/admin/revoke}" method="post">
+                        <input type="hidden" name="username" th:value="${user.username}" />
+
+                        <!-- Revoke Admin Rights Button -->
+                        <button type="submit" th:if="${user.role == 'ADMIN'}" th:text="'Revoke Admin Rights'">Revoke Admin Rights</button>
+                    </form>
+
+                    <form th:action="@{/admin/promote}" method="post">
+                        <input type="hidden" name="username" th:value="${user.username}" />
+                        <!-- Promote to Admin Button -->
+                        <button type="submit" th:if="${user.role != 'ADMIN'}" th:text="'Promote to Admin'">Promote to Admin</button>
+                    </form>
+
+                    <!-- Delete User Button -->
+                    <form th:action="@{/admin/delete}" method="post">
+                        <input type="hidden" name="username" th:value="${user.username}" />
+                        <button type="submit">Delete User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
