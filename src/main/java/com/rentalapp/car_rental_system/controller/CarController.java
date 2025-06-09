@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
@@ -37,9 +38,11 @@ public class CarController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public void deleteCar(@PathVariable Long id) {
+    public String deleteCar(@PathVariable Long id) {
         carService.deleteCar(id);
+        return "redirect:/cars";
     }
+
 
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -78,11 +81,12 @@ public class CarController {
     @PostMapping("/{carId}/rent")
     public String rentCar(@PathVariable Long carId,
                           @RequestParam String username,
+                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
                           @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endTime,
                           Model model) {
         try {
-            reservationService.createReservation(username, carId, Collections.emptySet(), startTime, endTime);
+            reservationService.createReservation(username, carId, Collections.emptySet(), date, startTime, endTime);
             model.addAttribute("message", "Reservation successful!");
             return "reservation-confirmation";
         } catch (IllegalArgumentException e) {
@@ -90,6 +94,7 @@ public class CarController {
             return "rent-car";
         }
     }
+
 
 
 

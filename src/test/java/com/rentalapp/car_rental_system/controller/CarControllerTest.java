@@ -10,6 +10,7 @@ import org.mockito.*;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -41,7 +42,9 @@ class CarControllerTest {
 
     @Test
     void testDeleteCar() {
-        carController.deleteCar(1L);
+        String view = carController.deleteCar(1L);
+
+        assertThat(view).isEqualTo("redirect:/cars");
         verify(carService).deleteCar(1L);
     }
 
@@ -97,13 +100,14 @@ class CarControllerTest {
     @Test
     void testRentCar_Success() {
         Model model = new ConcurrentModel();
+        LocalDate date = LocalDate.of(2025, 6, 10);
 
         String view = carController.rentCar(
-                1L, "user1", LocalTime.of(10, 0), LocalTime.of(12, 0), model
+                1L, "user1", date, LocalTime.of(10, 0), LocalTime.of(12, 0), model
         );
 
         verify(reservationService).createReservation(
-                eq("user1"), eq(1L), anySet(), eq(LocalTime.of(10, 0)), eq(LocalTime.of(12, 0))
+                eq("user1"), eq(1L), anySet(), eq(date), eq(LocalTime.of(10, 0)), eq(LocalTime.of(12, 0))
         );
 
         assertThat(view).isEqualTo("reservation-confirmation");
@@ -112,12 +116,13 @@ class CarControllerTest {
 
     @Test
     void testRentCar_Failure() {
+        LocalDate date = LocalDate.of(2025, 6, 10);
         doThrow(new IllegalArgumentException("Unavailable")).when(reservationService)
-                .createReservation(any(), any(), any(), any(), any());
+                .createReservation(any(), any(), any(), eq(date), any(), any());
 
         Model model = new ConcurrentModel();
         String view = carController.rentCar(
-                1L, "user1", LocalTime.of(10, 0), LocalTime.of(12, 0), model
+                1L, "user1", date, LocalTime.of(10, 0), LocalTime.of(12, 0), model
         );
 
         assertThat(view).isEqualTo("rent-car");

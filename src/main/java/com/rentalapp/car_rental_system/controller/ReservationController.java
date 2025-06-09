@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -26,10 +27,12 @@ public class ReservationController {
             @RequestParam String username,
             @RequestParam Long carId,
             @RequestParam Set<Extra> extras,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endTime) {
-        return reservationService.createReservation(username, carId, extras, startTime, endTime);
+        return reservationService.createReservation(username, carId, extras, date, startTime, endTime);
     }
+
 
     @PostMapping("/rent")
     @PreAuthorize("hasRole('USER')")
@@ -37,13 +40,14 @@ public class ReservationController {
             @RequestParam String username,
             @RequestParam Long carId,
             @RequestParam Set<Extra> extras,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
             @RequestParam int duration,
             Model model
     ) {
         LocalTime endTime = startTime.plusHours(duration);
         try {
-            reservationService.createReservation(username, carId, extras, startTime, endTime);
+            reservationService.createReservation(username, carId, extras, date, startTime, endTime);
             model.addAttribute("message", "Reservation successful!");
             return "redirect:/cars";
         } catch (IllegalArgumentException e) {
@@ -51,6 +55,7 @@ public class ReservationController {
             return "rent-car";
         }
     }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('USER')")

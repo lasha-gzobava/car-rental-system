@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -31,6 +32,10 @@ class ReservationServiceTest {
 
     @Test
     void createReservation_successful() {
+        LocalDate date = LocalDate.of(2025, 6, 10);
+        LocalTime start = LocalTime.of(10, 0);
+        LocalTime end = LocalTime.of(12, 0);
+
         Car car = new Car();
         car.setId(1L);
         car.setPricePerHour(10);
@@ -44,38 +49,40 @@ class ReservationServiceTest {
         when(reservationRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         Set<Extra> extras = Set.of(Extra.GPS);
-        LocalTime start = LocalTime.of(10, 0);
-        LocalTime end = LocalTime.of(12, 0);
 
-        Reservation res = reservationService.createReservation("john", 1L, extras, start, end);
+        Reservation res = reservationService.createReservation("john", 1L, extras, date, start, end);
 
-        assertEquals(2 * 10 + Extra.GPS.getPrice(), res.getTotalPrice());
+        assertEquals(20 + Extra.GPS.getPrice(), res.getTotalPrice());
         assertEquals(user, res.getUser());
         assertEquals(car, res.getCar());
+        assertEquals(date, res.getDate());
     }
 
     @Test
     void createReservation_conflict_throwsException() {
-        Car car = new Car();
-        car.setId(1L);
-        car.setPricePerHour(15);
-        User user = new User();
+        LocalDate date = LocalDate.of(2025, 6, 10);
         Reservation existing = new Reservation();
+        existing.setDate(date);
         existing.setStartTime(LocalTime.of(10, 0));
         existing.setEndTime(LocalTime.of(12, 0));
+
+        Car car = new Car();
+        User user = new User();
 
         when(carRepository.findById(1L)).thenReturn(Optional.of(car));
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
         when(reservationRepository.findByCarId(1L)).thenReturn(List.of(existing));
 
         assertThrows(IllegalArgumentException.class, () ->
-                reservationService.createReservation("john", 1L, Set.of(), LocalTime.of(11, 0), LocalTime.of(13, 0)));
+                reservationService.createReservation("john", 1L, Set.of(), date,
+                        LocalTime.of(11, 0), LocalTime.of(13, 0)));
     }
 
     @Test
     void updateReservation_success() {
         Car car = new Car();
         car.setPricePerHour(10);
+
         Reservation reservation = new Reservation();
         reservation.setId(1L);
         reservation.setCar(car);

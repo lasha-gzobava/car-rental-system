@@ -11,6 +11,11 @@
     <h2>Payment</h2>
 
     <p>
+        Total Price: <strong><span th:text="${total} + ' ₾'">0 ₾</span></strong>
+    </p>
+
+
+    <p>
         You're about to rent
         <span th:text="${car.brand + ' ' + car.model}">Car</span>
         for <span th:text="${hours}">0</span> hours.
@@ -22,7 +27,9 @@
 
         <input type="hidden" name="carId" th:value="${car.id}" />
         <input type="hidden" name="hours" th:value="${hours}" />
+        <input type="hidden" name="date" th:value="${date}" />
         <input type="hidden" name="startTime" th:value="${startTime}" />
+
 
         <div class="input-group">
             <i class="fas fa-credit-card"></i>

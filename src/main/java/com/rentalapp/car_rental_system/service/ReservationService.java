@@ -9,6 +9,8 @@ import com.rentalapp.car_rental_system.repository.ReservationRepository;
 import com.rentalapp.car_rental_system.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -23,6 +25,7 @@ public class ReservationService {
 
 
     public Reservation createReservation(String username, Long carId, Set<Extra> extras,
+                                         LocalDate date,
                                          LocalTime startTime, LocalTime endTime) {
 
         Car car = carRepository.findById(carId)
@@ -35,21 +38,23 @@ public class ReservationService {
             throw new IllegalArgumentException("End time must be after start time.");
         }
 
-        List<Reservation> existingReservations = reservationRepository.findByCarId(carId);
+        List<Reservation> existingReservations = reservationRepository.findByCarId(carId).stream()
+                .filter(r -> r.getDate().equals(date))
+                .toList();
+
         for (Reservation r : existingReservations) {
             if (!(endTime.isBefore(r.getStartTime()) || startTime.isAfter(r.getEndTime()))) {
                 throw new IllegalArgumentException("Car is already reserved during the selected time.");
             }
         }
 
-        double extraPrice = extras.stream()
-                .mapToDouble(Extra::getPrice)
-                .sum();
+        double extraPrice = extras.stream().mapToDouble(Extra::getPrice).sum();
         double price = extraPrice + (hours * car.getPricePerHour());
 
         Reservation reservation = new Reservation();
         reservation.setCar(car);
         reservation.setUser(user);
+        reservation.setDate(date);
         reservation.setExtras(extras);
         reservation.setStartTime(startTime);
         reservation.setEndTime(endTime);
@@ -57,6 +62,7 @@ public class ReservationService {
 
         return reservationRepository.save(reservation);
     }
+
 
 
 

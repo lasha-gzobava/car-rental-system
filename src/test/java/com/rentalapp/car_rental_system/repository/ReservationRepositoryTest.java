@@ -36,7 +36,7 @@ public class ReservationRepositoryTest {
                 .lastName("Smith")
                 .username("anna")
                 .email("anna@mail.com")
-                .password("pass")
+                .password("123456")  // Password must be at least 6 characters
                 .role(Role.USER)
                 .build());
 
@@ -56,6 +56,7 @@ public class ReservationRepositoryTest {
                 .endTime(LocalTime.of(12, 0))
                 .extras(Set.of(Extra.GPS))
                 .totalPrice(110)
+                .date(java.time.LocalDate.of(2025, 6, 10)) // Required date
                 .build();
 
         reservationRepository.save(res);
@@ -66,4 +67,5 @@ public class ReservationRepositoryTest {
         assertThat(byCar).hasSize(1);
         assertThat(byUser).hasSize(1);
     }
+
 }

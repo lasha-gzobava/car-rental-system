@@ -12,6 +12,7 @@ import org.mockito.*;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -37,26 +38,33 @@ class PaymentControllerTest {
         Long carId = 1L;
         int duration = 2;
         LocalTime startTime = LocalTime.of(10, 0);
+        LocalDate date = LocalDate.of(2025, 6, 10);
+
         Car car = new Car();
         car.setPricePerHour(50.0);
         car.setId(carId);
 
         when(carService.getCarById(carId)).thenReturn(car);
+
         Model model = new ConcurrentModel();
 
         String view = paymentController.showPaymentPage(
-                carId, "user1", startTime, duration, Set.of(Extra.GPS, Extra.INSURANCE), model
+                carId, "user1", date, startTime, duration, Set.of(Extra.GPS, Extra.INSURANCE), model
         );
 
         assertThat(view).isEqualTo("payment");
-        assertThat(model.getAttribute("total")).isEqualTo(Extra.GPS.getPrice() + Extra.INSURANCE.getPrice() + 100.0);
+        double expectedTotal = car.getPricePerHour() * duration + Extra.GPS.getPrice() + Extra.INSURANCE.getPrice();
+        assertThat(model.getAttribute("total")).isEqualTo(expectedTotal);
     }
 
     @Test
     void testProcessPayment_Success() {
         Long carId = 1L;
+        int hours = 2;
         LocalTime startTime = LocalTime.of(12, 0);
-        LocalTime endTime = startTime.plusHours(2);
+        LocalDate date = LocalDate.of(2025, 6, 10);
+        LocalTime endTime = startTime.plusHours(hours);
+
         Car car = new Car();
         car.setSlug("tesla-model-s");
         car.setId(carId);
@@ -65,25 +73,28 @@ class PaymentControllerTest {
         user.setUsername("user1");
 
         when(carService.getCarById(carId)).thenReturn(car);
-        when(carService.isCarAvailable(carId, startTime, endTime)).thenReturn(true);
+        when(carService.isCarAvailable(carId, date, startTime, endTime)).thenReturn(true);
 
         Model model = new ConcurrentModel();
 
         String result = paymentController.processPayment(
-                carId, 2, startTime,
+                carId, hours, date, startTime,
                 "1234", "John Doe", "12/26", "123",
                 user, model
         );
 
-        verify(reservationService).createReservation("user1", carId, Set.of(), startTime, endTime);
+        verify(reservationService).createReservation("user1", carId, Set.of(), date, startTime, endTime);
         assertThat(result).isEqualTo("redirect:/cars/details/tesla-model-s");
     }
 
     @Test
     void testProcessPayment_UnavailableCar() {
         Long carId = 1L;
+        int hours = 2;
+        LocalDate date = LocalDate.of(2025, 6, 10);
         LocalTime startTime = LocalTime.of(14, 0);
-        LocalTime endTime = startTime.plusHours(2);
+        LocalTime endTime = startTime.plusHours(hours);
+
         Car car = new Car();
         car.setId(carId);
 
@@ -91,13 +102,13 @@ class PaymentControllerTest {
         user.setUsername("user1");
 
         when(carService.getCarById(carId)).thenReturn(car);
-        when(carService.isCarAvailable(carId, startTime, endTime)).thenReturn(false);
+        when(carService.isCarAvailable(carId, date, startTime, endTime)).thenReturn(false);
         when(reservationService.getReservationsByCarId(carId)).thenReturn(List.of());
 
         Model model = new ConcurrentModel();
 
         String view = paymentController.processPayment(
-                carId, 2, startTime,
+                carId, hours, date, startTime,
                 "1234", "John Doe", "12/26", "123",
                 user, model
         );
@@ -109,10 +120,11 @@ class PaymentControllerTest {
 
     @Test
     void testProcessPayment_NoUser() {
+        Model model = new ConcurrentModel();
         String result = paymentController.processPayment(
-                1L, 2, LocalTime.of(10, 0),
+                1L, 2, LocalDate.of(2025, 6, 10), LocalTime.of(10, 0),
                 "1234", "John Doe", "12/26", "123",
-                null, new ConcurrentModel()
+                null, model
         );
         assertThat(result).isEqualTo("redirect:/login");
     }

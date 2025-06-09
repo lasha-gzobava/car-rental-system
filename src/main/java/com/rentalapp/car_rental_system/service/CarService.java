@@ -10,6 +10,7 @@ import com.rentalapp.car_rental_system.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -82,25 +83,27 @@ public class CarService {
     }
 
 
-    public boolean isCarAvailable(Long carId, LocalTime startTime, LocalTime endTime) {
+    public boolean isCarAvailable(Long carId, LocalDate date, LocalTime startTime, LocalTime endTime) {
         List<Reservation> reservations = reservationRepository.findByCarId(carId);
 
-
         for (Reservation reservation : reservations) {
+            if (!reservation.getDate().equals(date)) continue;
+
             if (!(endTime.isBefore(reservation.getStartTime()) || startTime.isAfter(reservation.getEndTime()))) {
-                return false;
+                return false; // Conflict on the same day
             }
         }
 
-        return true;
+        return true; // No conflict on that date
     }
 
+
     public Reservation createReservation(String username, Long carId, Set<Extra> extras,
-                                         LocalTime startTime, LocalTime endTime) {
+                                         LocalDate date, LocalTime startTime, LocalTime endTime) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new IllegalArgumentException("Car not found"));
 
-        if (!isCarAvailable(carId, startTime, endTime)) {
+        if (!isCarAvailable(carId, date, startTime, endTime)) {
             throw new IllegalArgumentException("Car is not available for the selected time");
         }
 
@@ -115,14 +118,15 @@ public class CarService {
         Reservation reservation = new Reservation();
         reservation.setCar(car);
         reservation.setUser(user);
+        reservation.setDate(date); // ✅ set booking date
         reservation.setExtras(extras);
         reservation.setStartTime(startTime);
         reservation.setEndTime(endTime);
         reservation.setTotalPrice(totalPrice);
 
-        // Save the reservation
         return reservationRepository.save(reservation);
     }
+
 
 
 

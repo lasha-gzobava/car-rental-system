@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class PaymentController {
     @PostMapping
     public String processPayment(@RequestParam Long carId,
                                  @RequestParam int hours,
+                                 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
                                  @RequestParam String cardNumber,
                                  @RequestParam String cardHolder,
@@ -44,22 +46,24 @@ public class PaymentController {
         Car car = carService.getCarById(carId);
         LocalTime endTime = startTime.plusHours(hours);
 
-        if (!carService.isCarAvailable(carId, startTime, endTime)) {
+        if (!carService.isCarAvailable(carId, date, startTime, endTime)) {
             model.addAttribute("car", car);
             model.addAttribute("reservations", reservationService.getReservationsByCarId(carId));
             model.addAttribute("error", "This car is already booked for the selected time.");
             return "rent-car";
         }
 
-        reservationService.createReservation(username, carId, Set.of(), startTime, endTime);
+        reservationService.createReservation(username, carId, Set.of(), date, startTime, endTime);
         return "redirect:/cars/details/" + car.getSlug();
     }
+
 
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{carId}")
     public String showPaymentPage(@PathVariable Long carId,
                                   @RequestParam String username,
+                                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime startTime,
                                   @RequestParam int duration,
                                   @RequestParam(required = false) Set<Extra> extras,
@@ -73,6 +77,7 @@ public class PaymentController {
 
         model.addAttribute("car", car);
         model.addAttribute("username", username);
+        model.addAttribute("date", date);
         model.addAttribute("startTime", startTime);
         model.addAttribute("endTime", endTime);
         model.addAttribute("hours", duration);
@@ -81,4 +86,5 @@ public class PaymentController {
 
         return "payment";
     }
+
 }

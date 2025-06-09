@@ -19,7 +19,19 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User createUser(String firstName, String lastName, String username, String email, String password, Role role) {
-        System.out.println(" Saving user: " + username);
+        System.out.println("Saving user: " + username);
+
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+
+
+
+        if (password.length() < 6) {
+            throw new IllegalArgumentException("Password must be at least 6 characters long");
+        }
 
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
@@ -39,9 +51,9 @@ public class UserService {
 
         System.out.println("Registering user: " + username);
 
-
         return userRepository.save(user);
     }
+
 
 
 

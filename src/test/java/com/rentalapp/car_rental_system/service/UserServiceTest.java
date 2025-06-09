@@ -27,17 +27,18 @@ public class UserServiceTest {
 
     @Test
     public void createUser_successful() {
-        when(userRepository.findByEmail("email")).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.empty());
         when(userRepository.findByUsername("user")).thenReturn(Optional.empty());
-        when(passwordEncoder.encode("pass")).thenReturn("encoded");
+        when(passwordEncoder.encode("pass123")).thenReturn("encoded");
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        User result = userService.createUser("John", "Doe", "user", "email", "pass", Role.USER);
+        User result = userService.createUser("John", "Doe", "user", "user@example.com", "pass123", Role.USER);
 
         assertEquals("user", result.getUsername());
         assertEquals("encoded", result.getPassword());
         assertEquals(Role.USER, result.getRole());
     }
+
 
     @Test
     public void createUser_emailExists_throws() {

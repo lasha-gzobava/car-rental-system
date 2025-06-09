@@ -9,6 +9,7 @@ import org.mockito.*;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -31,40 +32,44 @@ class ReservationControllerTest {
     @Test
     void testCreateReservation() {
         Reservation reservation = new Reservation();
-        when(reservationService.createReservation("user1", 1L, Set.of(Extra.GPS), LocalTime.of(10, 0), LocalTime.of(12, 0)))
+        LocalDate date = LocalDate.of(2025, 6, 10);
+
+        when(reservationService.createReservation("user1", 1L, Set.of(Extra.GPS), date, LocalTime.of(10, 0), LocalTime.of(12, 0)))
                 .thenReturn(reservation);
 
         Reservation result = reservationController.createReservation(
-                "user1", 1L, Set.of(Extra.GPS),
+                "user1", 1L, Set.of(Extra.GPS), date,
                 LocalTime.of(10, 0), LocalTime.of(12, 0)
         );
 
         assertThat(result).isEqualTo(reservation);
-        verify(reservationService).createReservation("user1", 1L, Set.of(Extra.GPS), LocalTime.of(10, 0), LocalTime.of(12, 0));
+        verify(reservationService).createReservation("user1", 1L, Set.of(Extra.GPS), date, LocalTime.of(10, 0), LocalTime.of(12, 0));
     }
 
     @Test
     void testCreateReservationWebSuccess() {
         Model model = new ConcurrentModel();
+        LocalDate date = LocalDate.of(2025, 6, 10);
         String result = reservationController.createReservationWeb(
-                "user1", 1L, Set.of(Extra.GPS),
+                "user1", 1L, Set.of(Extra.GPS), date,
                 LocalTime.of(10, 0), 2, model
         );
 
         verify(reservationService).createReservation("user1", 1L, Set.of(Extra.GPS),
-                LocalTime.of(10, 0), LocalTime.of(12, 0));
+                date, LocalTime.of(10, 0), LocalTime.of(12, 0));
         assertThat(result).isEqualTo("redirect:/cars");
     }
 
     @Test
     void testCreateReservationWebFailure() {
         Model model = new ConcurrentModel();
+        LocalDate date = LocalDate.of(2025, 6, 10);
         doThrow(new IllegalArgumentException("Conflict")).when(reservationService).createReservation(
-                any(), any(), any(), any(), any()
+                any(), any(), any(), eq(date), any(), any()
         );
 
         String result = reservationController.createReservationWeb(
-                "user1", 1L, Set.of(Extra.GPS),
+                "user1", 1L, Set.of(Extra.GPS), date,
                 LocalTime.of(10, 0), 2, model
         );
 
@@ -79,14 +84,13 @@ class ReservationControllerTest {
 
         Reservation result = reservationController.updateReservation(
                 1L,
-                Set.of(Extra.GPS), // ✅ fixed this line
+                Set.of(Extra.GPS),
                 LocalTime.of(11, 0),
                 LocalTime.of(13, 0)
         );
 
         assertThat(result).isEqualTo(updated);
     }
-
 
     @Test
     void testGetUserReservations() {

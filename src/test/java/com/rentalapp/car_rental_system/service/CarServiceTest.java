@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -24,6 +25,7 @@ class CarServiceTest {
     @Mock private CarRepository carRepository;
     @Mock private ReservationRepository reservationRepository;
     @Mock private UserRepository userRepository;
+
     @InjectMocks private CarService carService;
 
     @BeforeEach
@@ -52,7 +54,6 @@ class CarServiceTest {
         when(carRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         Car saved = carService.addCar(car);
-
         assertTrue(saved.getSlug().contains("audi-q7"));
     }
 
@@ -74,43 +75,47 @@ class CarServiceTest {
         updated.setPricePerHour(40);
 
         Car result = carService.updateCar(1L, updated);
-
         assertEquals("Model 3", result.getModel());
         assertEquals(40, result.getPricePerHour());
     }
 
-
-
     @Test
-    void isCarAvailable_returnsFalseWhenOverlaps() {
+    void isCarAvailable_returnsFalseWhenOverlapsSameDate() {
+        LocalDate date = LocalDate.of(2025, 6, 10);
         Reservation r1 = new Reservation();
+        r1.setDate(date);
         r1.setStartTime(LocalTime.of(10, 0));
         r1.setEndTime(LocalTime.of(12, 0));
         when(reservationRepository.findByCarId(1L)).thenReturn(List.of(r1));
 
-        boolean available = carService.isCarAvailable(1L, LocalTime.of(11, 0), LocalTime.of(13, 0));
+        boolean available = carService.isCarAvailable(1L, date, LocalTime.of(11, 0), LocalTime.of(13, 0));
         assertFalse(available);
     }
 
     @Test
     void createReservation_successful() {
+        Long carId = 1L;
+        LocalDate date = LocalDate.of(2025, 6, 10);
+        LocalTime start = LocalTime.of(10, 0);
+        LocalTime end = LocalTime.of(12, 0);
+
         Car car = new Car();
-        car.setId(1L);
+        car.setId(carId);
         car.setPricePerHour(20);
-        when(carRepository.findById(1L)).thenReturn(Optional.of(car));
-        when(reservationRepository.findByCarId(1L)).thenReturn(Collections.emptyList());
+        when(carRepository.findById(carId)).thenReturn(Optional.of(car));
+        when(reservationRepository.findByCarId(carId)).thenReturn(Collections.emptyList());
 
         User user = new User();
         when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
         when(reservationRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         Set<Extra> extras = Set.of(Extra.GPS, Extra.INSURANCE);
-        Reservation res = carService.createReservation("john", 1L, extras,
-                LocalTime.of(10, 0), LocalTime.of(12, 0));
+        Reservation res = carService.createReservation("john", carId, extras, date, start, end);
 
         assertEquals(2, res.getExtras().size());
         assertEquals(user, res.getUser());
         assertEquals(car, res.getCar());
+        assertEquals(date, res.getDate());
         assertEquals(40 + extras.stream().mapToDouble(Extra::getPrice).sum(), res.getTotalPrice());
     }
 }
