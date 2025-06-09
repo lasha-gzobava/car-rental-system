@@ -9,7 +9,8 @@ import com.rentalapp.car_rental_system.repository.ReservationRepository;
 import com.rentalapp.car_rental_system.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -19,6 +20,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
+    private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
     private final CarRepository carRepository;
@@ -28,15 +30,25 @@ public class ReservationService {
                                          LocalDate date,
                                          LocalTime startTime, LocalTime endTime) {
 
+        log.info("Creating reservation for user '{}' and car ID {} on {}", username, carId, date);
         Car car = carRepository.findById(carId)
-                .orElseThrow(() -> new IllegalArgumentException("Car not found"));
+                .orElseThrow(() -> {
+                    log.warn("Car not found with ID {}", carId);
+                    return new IllegalArgumentException("Car not found");
+                });
+
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> {
+                    log.warn("User not found with username '{}'", username);
+                    return new IllegalArgumentException("User not found");
+                });
 
         long hours = ChronoUnit.HOURS.between(startTime, endTime);
         if (hours <= 0) {
+            log.warn("Invalid reservation duration: start={} end={}", startTime, endTime);
             throw new IllegalArgumentException("End time must be after start time.");
         }
+
 
         List<Reservation> existingReservations = reservationRepository.findByCarId(carId).stream()
                 .filter(r -> r.getDate().equals(date))
@@ -44,6 +56,7 @@ public class ReservationService {
 
         for (Reservation r : existingReservations) {
             if (!(endTime.isBefore(r.getStartTime()) || startTime.isAfter(r.getEndTime()))) {
+                log.warn("Reservation conflict: car ID {} already booked from {} to {}", carId, r.getStartTime(), r.getEndTime());
                 throw new IllegalArgumentException("Car is already reserved during the selected time.");
             }
         }
@@ -60,7 +73,10 @@ public class ReservationService {
         reservation.setEndTime(endTime);
         reservation.setTotalPrice(price);
 
-        return reservationRepository.save(reservation);
+
+        Reservation saved = reservationRepository.save(reservation);
+        log.info("Reservation created: ID {} for user '{}' and car ID {}", saved.getId(), username, carId);
+        return saved;
     }
 
 
@@ -70,13 +86,19 @@ public class ReservationService {
                                          LocalTime newStartTime, LocalTime newEndTime,
                                          Set<Extra> newExtras) {
 
+        log.info("Updating reservation ID {}", reservationId);
+
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+                .orElseThrow(() -> {
+                    log.warn("Reservation not found: ID {}", reservationId);
+                    return new IllegalArgumentException("Reservation not found");
+                });
 
         Car car = reservation.getCar();
 
         long hours = ChronoUnit.HOURS.between(newStartTime, newEndTime);
         if (hours <= 0) {
+            log.warn("Invalid update: endTime {} is not after startTime {}", newEndTime, newStartTime);
             throw new IllegalArgumentException("Invalid reservation duration");
         }
 
@@ -89,37 +111,53 @@ public class ReservationService {
         reservation.setExtras(newExtras);
         reservation.setTotalPrice(total);
 
-        return reservationRepository.save(reservation);
+        Reservation updated = reservationRepository.save(reservation);
+        log.info("Reservation updated: ID {}", reservationId);
+        return updated;
     }
 
     public void deleteReservation(Long reservationId) {
+        log.info("Deleting reservation ID {}", reservationId);
         Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+                .orElseThrow(() -> {
+                    log.warn("Reservation not found: ID {}", reservationId);
+                    return new IllegalArgumentException("Reservation not found");
+                });
 
         Car car = reservation.getCar();
         carRepository.save(car);
-
         reservationRepository.delete(reservation);
+        log.info("Reservation deleted: ID {}", reservationId);
     }
 
     public Reservation getReservation(Long reservationId) {
+        log.debug("Fetching reservation ID {}", reservationId);
         return reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+                .orElseThrow(() -> {
+                    log.warn("Reservation not found: ID {}", reservationId);
+                    return new IllegalArgumentException("Reservation not found");
+                });
     }
 
 
     public List<Reservation> getReservationsByUsername(String username) {
+        log.debug("Fetching reservations for user '{}'", username);
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> {
+                    log.warn("User not found for reservations: '{}'", username);
+                    return new IllegalArgumentException("User not found");
+                });
         return reservationRepository.findByUser(user);
     }
 
 
     public List<Reservation> getAllReservations() {
+        log.debug("Fetching all reservations");
         return reservationRepository.findAll();
     }
 
     public List<Reservation> getReservationsByCarId(Long id) {
+        log.debug("Fetching reservations for car ID {}", id);
         return reservationRepository.findByCarId(id);
     }
 }
