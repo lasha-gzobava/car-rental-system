@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Database Error</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css" />
+</head>
+<body>
+<div class="card">
+    <h1>Oops! Database Error</h1>
+    <p th:text="${message}">We're currently experiencing database issues. Please try again later.</p>
+    <a href="/">Back to Home</a>
+</div>
+</body>
+</html>
