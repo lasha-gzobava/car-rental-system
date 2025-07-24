@@ -28,6 +28,10 @@ public class Reservation {
 
 
     @Column(nullable = false)
+    private LocalDate date;
+
+
+    @Column(nullable = false)
     private LocalTime startTime;
 
     @Column(nullable = false)

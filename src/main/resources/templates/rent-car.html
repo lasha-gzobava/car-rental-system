@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title th:text="'Rent ' + ${car.brand} + ' ' + ${car.model}">Car Details</title>
     <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
@@ -21,25 +19,27 @@
         </span>
     </p>
 
-    <!-- 🚫 Error Box -->
     <div th:if="${error}" class="error-box" style="color: red; font-weight: bold; margin-bottom: 10px;">
         <p th:text="${error}"></p>
     </div>
 
-    <!-- 🕒 Reserved Time Slots -->
     <div>
         <h3>Reserved Time Slots:</h3>
         <ul>
             <li th:each="res : ${reservations}">
-                <span th:text="${#temporals.format(res.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(res.endTime, 'HH:mm')}"></span>
+                <span th:text="${#temporals.format(res.date, 'yyyy-MM-dd') + ' | ' + #temporals.format(res.startTime, 'HH:mm') + ' - ' + #temporals.format(res.endTime, 'HH:mm')}"></span>
             </li>
         </ul>
     </div>
 
-    <!-- 📅 Rent Form -->
     <form th:action="@{'/payment/' + ${car.id}}" method="get">
         <input type="hidden" name="username" th:value="${#authentication.name}" />
         <input type="hidden" name="carId" th:value="${car.id}" />
+
+        <div class="input-group">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" th:value="${date}" required>
+        </div>
 
         <div class="input-group">
             <label for="startTime">Start Time:</label>
@@ -53,14 +53,17 @@
 
         <div class="input-group extras">
             <p>Select Extras:</p>
-            <label><input type="checkbox" name="extras" value="INSURANCE"> Insurance</label>
-            <label><input type="checkbox" name="extras" value="CHILD_SEAT"> Child Seat</label>
-            <label><input type="checkbox" name="extras" value="GPS"> GPS</label>
+            <label><input type="checkbox" name="extras" value="INSURANCE">
+                Insurance (+20 ₾)</label><br>
+            <label><input type="checkbox" name="extras" value="CHILD_SEAT">
+                Child Seat (+15 ₾)</label><br>
+            <label><input type="checkbox" name="extras" value="GPS">
+                GPS (+10 ₾)</label>
         </div>
+
 
         <button type="submit">Proceed to Payment</button>
     </form>
-
 </div>
 
 </body>

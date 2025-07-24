@@ -29,7 +29,10 @@
 
         <div class="input-group">
             <i class="fas fa-envelope"></i>
-            <input type="email" name="email" placeholder="Email" required>
+            <input type="email" name="email" placeholder="Email" required
+                   pattern="^[\\w.+\\-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$"
+                   title="Enter a valid email address">
+
         </div>
 
         <div class="input-group password-group">
@@ -68,12 +71,30 @@
     function checkPasswords() {
         const pass = document.getElementById("password").value;
         const confirm = document.getElementById("confirmPassword").value;
+        const email = document.querySelector('input[name="email"]').value;
+
+        // Regex for valid email format
+        const emailRegex = /^[\w.+\-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+        if (!emailRegex.test(email)) {
+            alert("Please enter a valid email address.");
+            return false;
+        }
+
+        if (pass.length < 6) {
+            alert("Password must be at least 6 characters long.");
+            return false;
+        }
+
         if (pass !== confirm) {
             alert("Passwords do not match!");
             return false;
         }
+
         return true;
     }
+
 </script>
+
 </body>
 </html>

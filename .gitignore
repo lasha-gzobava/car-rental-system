@@ -48,5 +48,4 @@ Thumbs.db
 *.swp
 *.swo
 
-.env
-pass.env
+src/main/resources/application.properties

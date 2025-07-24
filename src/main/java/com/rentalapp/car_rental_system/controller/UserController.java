@@ -3,10 +3,9 @@ package com.rentalapp.car_rental_system.controller;
 import com.rentalapp.car_rental_system.entity.User;
 import com.rentalapp.car_rental_system.enums.Role;
 import com.rentalapp.car_rental_system.service.UserService;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
 
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
+    private final UserService userService;
 
     @PostMapping("/register")
     public String register(@RequestParam String firstName,
@@ -23,12 +24,10 @@ public class UserController {
                            @RequestParam String username,
                            @RequestParam String email,
                            @RequestParam String password) {
-        System.out.println("Register endpoint was called");
-        userService.createUser(firstName, lastName, username, email, password, Role.USER); // Always USER
+        log.info("Register user with username {}", username);
+        userService.createUser(firstName, lastName, username, email, password, Role.USER);
         return "redirect:/login";
     }
-
-
 
     @PutMapping("/{username}")
     public User update(@PathVariable String username,
@@ -36,18 +35,19 @@ public class UserController {
                        @RequestParam String lastName,
                        @RequestParam String email,
                        @RequestParam String password){
+        log.info("Updating user '{}'", username);
         return userService.updateUser(username, firstName, lastName, email, password);
     }
 
     @GetMapping("/{username}")
     public User get(@PathVariable String username){
+        log.debug("Getting user by username '{}'", username);
         return userService.getUserByUsername(username);
     }
 
     @DeleteMapping("/{username}")
     public void delete(@PathVariable String username){
+        log.info("Deleting user '{}'", username);
         userService.deleteUser(username);
     }
-
-
 }

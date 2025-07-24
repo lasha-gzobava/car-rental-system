@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Car {
 
     @Id
@@ -43,7 +44,7 @@ public class Car {
 
 
     @Column(nullable = false, unique = true)
-    private String slug; // Slug for the URL
+    private String slug;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Reservation> reservations;

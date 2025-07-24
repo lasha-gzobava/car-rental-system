@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservation Confirmation</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<h1>Reservation Successful!</h1>
+<p th:text="'Your reservation for car: ' + ${car.model} + ' has been successfully created.'"></p>
+<p th:text="'Start time: ' + ${startTime}"></p>
+<p th:text="'End time: ' + ${endTime}"></p>
+<a href="/cars">Back to car list</a>
+</body>
+</html>

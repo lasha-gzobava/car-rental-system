@@ -17,21 +17,21 @@
                     <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
                     <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
 
-                    <!-- Conditionally show Promote or Revoke -->
+
                     <form th:action="@{/admin/revoke}" method="post">
                         <input type="hidden" name="username" th:value="${user.username}" />
 
-                        <!-- Revoke Admin Rights Button -->
+
                         <button type="submit" th:if="${user.role == 'ADMIN'}" th:text="'Revoke Admin Rights'">Revoke Admin Rights</button>
                     </form>
 
                     <form th:action="@{/admin/promote}" method="post">
                         <input type="hidden" name="username" th:value="${user.username}" />
-                        <!-- Promote to Admin Button -->
+
                         <button type="submit" th:if="${user.role != 'ADMIN'}" th:text="'Promote to Admin'">Promote to Admin</button>
                     </form>
 
-                    <!-- Delete User Button -->
+
                     <form th:action="@{/admin/delete}" method="post">
                         <input type="hidden" name="username" th:value="${user.username}" />
                         <button type="submit">Delete User</button>
